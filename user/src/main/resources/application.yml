@@ -28,7 +28,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -51,4 +51,10 @@ jwt:
 
 application:
   config:
-    users-url: http://localhost:8090/api/auth/register
+    users-url: http://localhost:8070/api/auth/register
+
+logging:
+  level:
+    root: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG

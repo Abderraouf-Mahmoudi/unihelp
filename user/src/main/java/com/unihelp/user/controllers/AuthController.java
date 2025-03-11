@@ -31,8 +31,14 @@ public class AuthController {
     private final UserRepository userRepository;
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@Valid @RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(userService.registerUser(request));
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+        try {
+            User user = userService.registerUser(request);
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Erreur d'inscription : " + e.getMessage());
+        }
     }
 
     @PostMapping("/login")
@@ -65,5 +71,11 @@ public class AuthController {
             .email(user.getEmail())
             .role(user.getRole().name())
             .build());
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout() {
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok("User logged out successfully.");
     }
 }
