@@ -1,7 +1,5 @@
 # UniHelp Platform
-**Bridging Gaps in Academic Collaboration & Resource Sharing**  
-![UniHelp Banner](https://via.placeholder.com/1200x400?text=UniHelp+Banner) <!-- Add your own banner image later -->
-
+**Bridging Gaps in Academic Collaboration & Resource Sharing**
 ---
 
 ## 🌟 Overview
@@ -24,13 +22,12 @@ UniHelp is an all-in-one academic platform designed to empower students by integ
 ### Backend
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
 ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ### Frontend
 ![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 
-*Frontend Repository: [UniHelp Frontend](https://github.com/your-username/unihelp-frontend)* <!-- Update link -->
+*Frontend Repository: [Still Working On it](https://github.com/Abderraouf-Mahmoudi/unihelp)* <!-- Update link -->
 
 ---
 
@@ -39,7 +36,3 @@ Traditional platforms like Coursera lack peer support and resource-sharing capab
 - **Collaborative Learning** (Study Groups + Forums)
 - **Resource Economy** (Academic Marketplace)
 - **Smart Recommendations** (AI-driven matching)
-
----
-
-## 📂 Repository Structure
