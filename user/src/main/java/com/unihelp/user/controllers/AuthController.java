@@ -1,5 +1,13 @@
 package com.unihelp.user.controllers;
 
+import com.unihelp.user.dto.*;
+import com.unihelp.user.entities.Token;
+import com.unihelp.user.entities.User;
+import com.unihelp.user.repositories.TokenRepository;
+import com.unihelp.user.repositories.UserRepository;
+import com.unihelp.user.security.JwtUtils;
+import com.unihelp.user.services.UserService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,22 +18,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+
+import java.time.LocalDateTime;
 import java.util.List;
-import com.unihelp.user.dto.LoginRequest;
-import com.unihelp.user.dto.LoginResponse;
-import com.unihelp.user.dto.RegisterRequest;
-import com.unihelp.user.entities.User;
-import com.unihelp.user.repositories.UserRepository;
-import com.unihelp.user.security.JwtUtils;
-import com.unihelp.user.services.UserService;
+
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -36,6 +36,9 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
+    private final TokenRepository tokenRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
@@ -151,5 +154,44 @@ public class AuthController {
             .orElseThrow(() -> new RuntimeException("User not found"));
         userRepository.delete(user);
         return ResponseEntity.ok("User deleted successfully.");
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody EmailRequest email) throws MessagingException {
+        userService.generateAndSendEmailRestToken(email.getEmail());
+        return ResponseEntity.ok("Password reset link sent to your email!");
+    }
+    @GetMapping("/reset-password")
+    public ResponseEntity<String> verifyToken(@RequestParam String token) {
+        Token resetToken = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid or expired token"));
+
+        if (resetToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token expired");
+        }
+
+        return ResponseEntity.ok("Token verified. Display password reset form.");
+    }
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
+        String token = request.getToken();
+        String newPassword = request.getNewPassword();
+
+        Token resetToken = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid or expired token"));
+
+        if (resetToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token expired");
+        }
+        if (newPassword.length() < 8) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le mot de passe doit comporter au moins 8 caractères.");
+        }
+        User user = resetToken.getUser();
+        user.setPassword(bCryptPasswordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        tokenRepository.delete(resetToken);
+
+        return ResponseEntity.ok("Password successfully reset!");
     }
 }
