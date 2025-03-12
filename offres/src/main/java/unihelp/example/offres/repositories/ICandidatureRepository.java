@@ -1,0 +1,8 @@
+package unihelp.example.offres.repositories;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import unihelp.example.offres.entities.Candidature;
+@Repository
+public interface ICandidatureRepository extends JpaRepository<Candidature, Long> {
+}
