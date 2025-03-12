@@ -2,6 +2,7 @@ package com.unihelp.user.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,9 +10,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,9 +49,19 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         // Log the email being used for login
         System.out.println("Attempting login for email: " + request.getEmail());
+
+        User user = userRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> {
+                System.out.println("User not found for email: " + request.getEmail());
+                return new RuntimeException("User not found");
+            });
+
+        if (user.isBanned()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User account is banned.");
+        }
 
         Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -56,15 +69,6 @@ public class AuthController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateToken((UserDetails) authentication.getPrincipal());
-        
-        // Log before retrieving the user
-        System.out.println("Retrieving user with email: " + request.getEmail());
-
-        User user = userRepository.findByEmail(request.getEmail())
-            .orElseThrow(() -> {
-                System.out.println("User not found for email: " + request.getEmail());
-                return new RuntimeException("User not found");
-            });
 
         System.out.println("User retrieved: " + user.getEmail());
 
@@ -96,5 +100,56 @@ public class AuthController {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("User not found"));
         return ResponseEntity.ok(user);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/admin/users/{id}/ban")
+    public ResponseEntity<String> banUser(@PathVariable Long id) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        if (user.isBanned()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already banned.");
+        }
+        user.setBanned(true);
+        userRepository.save(user);
+        return ResponseEntity.ok("User banned successfully.");
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/admin/users/{id}/unban")
+    public ResponseEntity<String> unbanUser(@PathVariable Long id) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        if (!user.isBanned()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is not banned.");
+        }
+        user.setBanned(false);
+        userRepository.save(user);
+        return ResponseEntity.ok("User unbanned successfully.");
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/admin/users/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setFirstName(updatedUser.getFirstName());
+        user.setLastName(updatedUser.getLastName());
+        user.setEmail(updatedUser.getEmail());
+        user.setBio(updatedUser.getBio());
+        user.setSkills(updatedUser.getSkills());
+        user.setProfileImage(updatedUser.getProfileImage());
+        user.setRole(updatedUser.getRole());
+        userRepository.save(user);
+        return ResponseEntity.ok("User details updated successfully.");
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/admin/users/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        userRepository.delete(user);
+        return ResponseEntity.ok("User deleted successfully.");
     }
 }
