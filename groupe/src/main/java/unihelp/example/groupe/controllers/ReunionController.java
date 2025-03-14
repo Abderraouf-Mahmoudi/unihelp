@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import unihelp.example.groupe.entities.Reunion;
 import unihelp.example.groupe.services.IReunionService;
+import unihelp.example.groupe.services.IUserService;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @RequestMapping("/api/reunions")
 public class ReunionController {
     IReunionService reunionService;
+    IUserService userService;
     // Récupérer toutes les réunions
     @GetMapping("/getall")
     public List<Reunion> getAllReunions() {
@@ -44,4 +46,10 @@ public class ReunionController {
             reunionService.delete(reunion);
         }
     }
+    // Endpoint pour ajouter une réunion à un groupe
+    @PostMapping("/{groupeId}/add-reunion/{reunionId}")
+    public Reunion addReunionToGroupe(@PathVariable Long groupeId, @PathVariable Long reunionId) {
+        return reunionService.addReunionToGroupe(groupeId, reunionId);
+    }
+
 }

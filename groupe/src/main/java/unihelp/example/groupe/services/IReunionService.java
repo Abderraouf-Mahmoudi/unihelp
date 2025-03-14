@@ -22,4 +22,6 @@ public interface IReunionService  {
 
     // Mettre à jour une réunion
     Reunion updateReunion(Reunion reunion);
+    Reunion addReunionToGroupe(Long groupeId, Long reunionId);
+
 }

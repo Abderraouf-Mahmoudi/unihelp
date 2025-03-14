@@ -27,4 +27,6 @@ public class Reunion {
     private String partipant;
     @OneToMany(mappedBy = "reunion")
     private List<Groupe> groupes;
+    @OneToMany(mappedBy = "reunion")
+    private List<User>users;
 }
