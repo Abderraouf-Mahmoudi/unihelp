@@ -1,28 +1,34 @@
 package unihelp.example.groupe.services;
 
-import unihelp.example.groupe.entities.Groupe;
+import unihelp.example.groupe.dto.GroupMemberDTO;
+import unihelp.example.groupe.dto.GroupeWithMembersDTO;
+import unihelp.example.groupe.entities.*;
 
 import java.util.List;
 
-public interface IGroupeService  {
+public interface IGroupeService {
+        public Groupe createGroup(String groupName, List<String> userNames, String createdBy);
 
-        // Récupérer un groupe par son ID
-        Groupe findById(long id);
+        public Groupe addUserToGroup(Long groupId, String userName);
 
-        // Récupérer tous les groupes
-        List<Groupe> findAll();
+        public Chat sendMessage(Long groupId, String userName, String messageText);
 
-        // Enregistrer un groupe
-        Groupe save(Groupe groupe);
+        public List<Message> getMessages(Long groupId);
 
-        // Supprimer un groupe
-        void delete(Groupe groupe);
+        List<Groupe> getAllGroups();
 
-        // Ajouter un groupe
-        Groupe addGroupe(Groupe groupe);
+        public List<GroupMemberDTO> getGroupMembers(Long groupId);
 
-        // Mettre à jour un groupe
-        Groupe updateGroupe(Groupe groupe);
-    }
+        Groupe renameGroup(Long groupId, String newName);
 
-
+        public void leaveGroup(Long groupId, String username);
+        List<Groupe> getGroupsForUser(String username);
+    void notifyVideoCall(Long groupId, String username);
+        void startVideoCall(Long groupId, String username);
+        public void handleIncomingWebSocketMessage(Long groupId, Message message);
+    void requestToJoin(Long groupId, String username);
+    List<JoinRequest> getPendingRequests(Long groupId);
+    public void acceptJoinRequest(Long requestId);
+    List<GroupeWithMembersDTO> getAllGroupsWithMembers();
+    List<Groupe> getGroupsCreatedBy(String username);
+}

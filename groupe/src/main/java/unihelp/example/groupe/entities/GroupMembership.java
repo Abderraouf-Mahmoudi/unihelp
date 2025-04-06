@@ -1,28 +1,29 @@
 package unihelp.example.groupe.entities;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class User {
+public class GroupMembership {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private long iduser;
-    private String name;
-    private String email;
-
+    private Long id;
+    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    @JsonBackReference
+    private Groupe groupe;
     @Enumerated(EnumType.STRING)
     private Typerole role;
-
-    @ManyToOne
-    private Reunion reunion;
-  /*  @JoinColumn(name = "reunion_id") // Clé étrangère pour mieux structurer la relation
-    private Reunion reunion;*/
+    private LocalDateTime joinedAt;
 }

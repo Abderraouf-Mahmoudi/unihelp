@@ -1,6 +1,3 @@
-eureka:
-  client:
-    register-with-eureka: false
 server:
   port: 8222
 spring:
@@ -14,16 +11,27 @@ spring:
         locator:
           enabled: true
       routes:
-        - id: students
-          uri: http://localhost:8090
+        - id: groupe
+          uri: lb://GROUPE
           predicates:
-            - Path=/api/v1/students/**
-        - id: schools
-          uri: http://localhost:8070
-          predicates:
-            - Path=/api/v1/schools/**
+            - Path=/groupe/**
           filters:
-            - StripPrefix=2
+            - StripPrefix=1
+
+        - id: user
+          uri: lb://USER
+          predicates:
+            - Path=/user/**
+          filters:
+            - StripPrefix=1
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
 logging:
   level:
     org.springframework.web: DEBUG
