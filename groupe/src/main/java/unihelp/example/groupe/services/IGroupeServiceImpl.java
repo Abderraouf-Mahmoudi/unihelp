@@ -9,19 +9,15 @@ import unihelp.example.groupe.dto.GroupMemberDTO;
 import unihelp.example.groupe.dto.GroupeWithMembersDTO;
 import unihelp.example.groupe.dto.UserDTO;
 import unihelp.example.groupe.entities.*;
-import unihelp.example.groupe.entities.Typerole;
 import unihelp.example.groupe.repositories.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @AllArgsConstructor
 public class IGroupeServiceImpl implements IGroupeService {
-
     private final IGroupeRepository groupeRepository;
     private final IChatRepository chatRepository;
     private final IMessageRepository messageRepository;
@@ -29,7 +25,6 @@ public class IGroupeServiceImpl implements IGroupeService {
     private final UserClient userClient;
     private final SimpMessagingTemplate messagingTemplate; // ✅ Ajout WebSocket push
     private final JoinRequestRepository joinRequestRepository;
-
 
     @Override
     public Groupe createGroup(String groupName, List<String> userNames, String createdBy) {
@@ -67,7 +62,6 @@ public class IGroupeServiceImpl implements IGroupeService {
                 groupMembershipRepository.save(membership);
             }
         }
-
         return savedGroup;
     }
     @Override
@@ -333,5 +327,26 @@ public class IGroupeServiceImpl implements IGroupeService {
     public List<Groupe> getGroupsCreatedBy(String username) {
         return groupeRepository.findByCreatedBy(username);
     }
+    @Override
+    public void deleteGroup(Long groupId, String username) {
+        Groupe group = groupeRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Groupe introuvable"));
+
+        // Obtenir l'utilisateur via microservice
+        UserDTO user = userClient.getUserByUsername(username);
+
+        // Vérifie l'appartenance et rôle
+        GroupMembership membership = groupMembershipRepository
+                .findByUserIdAndGroupe(user.getId(), group)
+                .orElseThrow(() -> new RuntimeException("Tu ne fais pas partie de ce groupe"));
+
+        if (!Typerole.ADMIN.equals(membership.getRole())) {
+            throw new RuntimeException("Seul l'administrateur peut supprimer ce groupe !");
+        }
+
+        groupeRepository.delete(group);
+    }
+
+
 
 }

@@ -18,4 +18,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // ✅ id auto-généré
     private String userName;
+    private String email;
+    private String password;
+
 }

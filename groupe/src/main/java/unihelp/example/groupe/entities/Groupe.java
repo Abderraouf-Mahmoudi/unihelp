@@ -30,6 +30,8 @@ public class Groupe
     @JsonManagedReference
     private Set<GroupMembership> members = new HashSet<>();
     private String createdBy;
+    private Long createdById;     // ✅ l’ID à ajouter si pas encore fait
+
     @OneToMany(mappedBy = "groupe", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     private Set<JoinRequest> joinRequests = new HashSet<>();

@@ -6,6 +6,7 @@ import unihelp.example.groupe.entities.GroupMembership;
 import unihelp.example.groupe.entities.Groupe;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IGroupeRepository extends JpaRepository<Groupe, Long> {

@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class GroupMembership {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long Id;
     private Long userId;
     @ManyToOne
     @JoinColumn(name = "group_id")

@@ -13,6 +13,7 @@ public class GroupeWithMembersDTO {
     private Long groupId;
     private String groupName;
     private String createdBy;
+    private Long createdById;     // ✅ on l'ajoute
     private Integer messageCount;
     private List<GroupMemberDTO> members;
 }

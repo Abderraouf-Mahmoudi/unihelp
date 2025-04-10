@@ -1,6 +1,7 @@
 package unihelp.example.groupe.controllers;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unihelp.example.groupe.dto.CreateGroupRequest;
@@ -101,6 +102,17 @@ IGroupeService groupeService ;
     public ResponseEntity<List<Groupe>> getGroupsCreatedBy(@RequestParam String username) {
         return ResponseEntity.ok(groupeService.getGroupsCreatedBy(username));
     }
+    @DeleteMapping("/group/{groupId}")
+    public ResponseEntity<?> deleteGroup(@PathVariable Long groupId,
+                                         @RequestParam String username) {
+        try {
+            groupeService.deleteGroup(groupId, username);
+            return ResponseEntity.ok().body("Groupe supprimé avec succès.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+    }
+
 
 
 }

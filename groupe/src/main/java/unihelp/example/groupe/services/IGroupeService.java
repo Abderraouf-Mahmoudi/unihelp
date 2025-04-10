@@ -26,9 +26,11 @@ public interface IGroupeService {
     void notifyVideoCall(Long groupId, String username);
         void startVideoCall(Long groupId, String username);
         public void handleIncomingWebSocketMessage(Long groupId, Message message);
-    void requestToJoin(Long groupId, String username);
-    List<JoinRequest> getPendingRequests(Long groupId);
-    public void acceptJoinRequest(Long requestId);
-    List<GroupeWithMembersDTO> getAllGroupsWithMembers();
-    List<Groupe> getGroupsCreatedBy(String username);
+        public void requestToJoin(Long groupId, String username);
+       List<JoinRequest> getPendingRequests(Long groupId);
+       public void acceptJoinRequest(Long requestId);
+       List<GroupeWithMembersDTO> getAllGroupsWithMembers();
+       List<Groupe> getGroupsCreatedBy(String username);
+       public void deleteGroup(Long groupId, String username);
+
 }
