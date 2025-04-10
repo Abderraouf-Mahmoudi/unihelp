@@ -1,7 +1,8 @@
 package unihelp.example.offres.entities;
 
 public enum Typeoffre {
-    CDI,
-    CDD,
-    Stage
+    STAGE, CDI, CDD, FREELANCE
+
+
+
 }

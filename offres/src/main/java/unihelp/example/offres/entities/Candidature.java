@@ -1,11 +1,12 @@
 package unihelp.example.offres.entities;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,16 +16,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Candidature {
-@Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    private String name;
-    private Date dateCandidature;
-    private String statut;
-    private String commentaire;
-    private String cv;
-    @OneToMany(mappedBy = "candidature")
-    private List<Offre> offres;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-
+    private Long userId;
+    private String message;
+    private String cvUrl;
+    private LocalDate dateDepot = LocalDate.now();
+    @ManyToOne
+    @JoinColumn(name = "offre_id") // clé étrangère
+    private Offre offre;
 }

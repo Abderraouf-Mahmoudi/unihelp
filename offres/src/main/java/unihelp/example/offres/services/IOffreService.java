@@ -1,27 +1,18 @@
 package unihelp.example.offres.services;
 
+
+import unihelp.example.offres.dto.UserDTO;
 import unihelp.example.offres.entities.Offre;
+import unihelp.example.offres.entities.Typeoffre;
 
 import java.util.List;
 
+
 public interface IOffreService {
-    // Récupérer un foyer par son ID
-    Offre findByid(long id);
+  public List<Offre> getAllOffres();
+  public Offre getOffreById(Long id);
+  public Offre createOffre(Offre offre, Long userIdAppelant);
+  Offre updateOffre(Long id, Offre offre, Long userIdAppelant);
+  boolean deleteOffre(Long id, Long userIdAppelant);
 
-    // Récupérer tous les foyers
-    List<Offre> findAll();
-
-
-   Offre save(Offre offre);
-
-    // Supprimer un offre
-    void delete(Offre offre);
-
-
-
-    // Ajouter un foyer
-    Offre addOffre(Offre offre);
-
-    // Mettre à jour un foyer
-    Offre updateOffre(Offre o);
 }

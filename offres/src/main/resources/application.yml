@@ -11,7 +11,7 @@ eureka:
     lease-renewal-interval-in-seconds: 4
 
 server:
-  port: 8090
+  port: 8091
 
 spring:
   cloud:
